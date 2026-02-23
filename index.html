@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty AI — Smart Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #16161f;
+  --surface3: #1c1c28;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #6c63ff;
+  --accent-soft: rgba(108,99,255,0.12);
+  --accent2: #00d4aa;
+  --accent2-soft: rgba(0,212,170,0.1);
+  --accent3: #ff6b6b;
+  --text: #e8e8f0;
+  --muted: #5a5a70;
+  --muted2: #8888a0;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ─────────────────────────── */
+.sidebar {
+  width: 270px;
+  min-width: 270px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+
+.logo-text span { color: var(--accent2); }
+.logo-sub { font-size: 10px; font-weight: 400; color: var(--muted2); font-family: 'DM Sans', sans-serif; display: block; margin-top: 1px; }
+
+.sidebar-inner { flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+.sidebar-inner::-webkit-scrollbar { width: 3px; }
+.sidebar-inner::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+.new-chat-btn {
+  background: linear-gradient(135deg, var(--accent), #9c97ff);
+  color: white; border: none; border-radius: 10px;
+  padding: 10px 14px; font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: opacity 0.2s, transform 0.15s; margin-bottom: 6px;
+}
+.new-chat-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+.section-label {
+  font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--muted); padding: 10px 6px 4px;
+}
+
+.faculty-chip {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 9px; padding: 9px 11px; cursor: pointer;
+  transition: all 0.18s; display: flex; align-items: center; gap: 9px;
+}
+.faculty-chip:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+.chip-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent2); flex-shrink: 0;
+}
+.chip-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip-dept { font-size: 11px; color: var(--muted2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.sidebar-footer {
+  padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0;
+}
+
+.status-pill {
+  background: var(--accent2-soft); border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 8px; padding: 8px 12px; font-size: 12px;
+  color: var(--accent2); display: flex; align-items: center; gap: 8px;
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent2);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.4; transform:scale(0.75); }
+}
+
+/* ─── MAIN ────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+.main::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(108,99,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108,99,255,0.025) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.topbar {
+  padding: 14px 26px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(10,10,15,0.85); backdrop-filter: blur(12px);
+  position: relative; z-index: 10; flex-shrink: 0;
+}
+
+.topbar-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; }
+
+.model-badge {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 5px 12px; font-size: 11.5px; color: var(--muted2);
+  display: flex; align-items: center; gap: 6px;
+}
+.model-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* ─── CHAT AREA ──────────────────────── */
+.chat-area {
+  flex: 1; overflow-y: auto; padding: 28px 26px;
+  display: flex; flex-direction: column; gap: 18px;
+  position: relative; z-index: 1; scroll-behavior: smooth;
+}
+.chat-area::-webkit-scrollbar { width: 4px; }
+.chat-area::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+
+/* Welcome */
+.welcome {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 100%; text-align: center; gap: 18px;
+  animation: fadeUp 0.5s ease;
+}
+.welcome-icon {
+  width: 76px; height: 76px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 22px; display: flex; align-items: center; justify-content: center;
+  font-size: 34px; box-shadow: 0 0 50px rgba(108,99,255,0.2);
+}
+.welcome h1 { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -0.8px; }
+.welcome p { color: var(--muted2); font-size: 14.5px; max-width: 400px; line-height: 1.7; }
+
+.quick-prompts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 520px; margin-top: 6px; }
+.quick-btn {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 8px 16px; font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--text); cursor: pointer; transition: all 0.18s;
+}
+.quick-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── MESSAGES ─────────────────────────── */
+.msg-row {
+  display: flex; gap: 10px; animation: fadeUp 0.25s ease; max-width: 820px;
+}
+.msg-row.user { flex-direction: row-reverse; align-self: flex-end; }
+.msg-row.bot  { align-self: flex-start; }
+
+.avatar {
+  width: 34px; height: 34px; border-radius: 9px; display: flex;
+  align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; align-self: flex-end;
+}
+.avatar.u { background: linear-gradient(135deg, var(--accent), #9c97ff); }
+.avatar.b { background: var(--surface2); border: 1px solid var(--border2); }
+
+.bubble {
+  max-width: 600px; border-radius: 16px; padding: 13px 17px;
+  font-size: 14.5px; line-height: 1.65;
+}
+.bubble.user { background: linear-gradient(135deg, var(--accent), #9c97ff); color: white; border-bottom-right-radius: 4px; }
+.bubble.bot  { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
+
+.bubble-time { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 5px; display: block; }
+.bubble.bot .bubble-time { color: var(--muted); }
+
+/* ─── FACULTY CARD ─────────────────────── */
+.faculty-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 14px; overflow: hidden; margin-top: 8px;
+}
+
+.card-header {
+  background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.08));
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+}
+
+.card-av {
+  width: 48px; height: 48px; border-radius: 13px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+
+.card-meta { flex: 1; min-width: 0; }
+.card-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15.5px; letter-spacing: -0.3px; }
+.card-desig { font-size: 12px; color: var(--accent2); font-weight: 500; margin-top: 2px; }
+.card-dept  { font-size: 11.5px; color: var(--muted2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.conf-badge {
+  padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.conf-badge.high   { background: rgba(0,212,170,0.15); color: var(--accent2); }
+.conf-badge.medium { background: rgba(255,193,7,0.15);  color: #ffc107; }
+.conf-badge.low    { background: rgba(255,107,107,0.15); color: var(--accent3); }
+
+.card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.info-row { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; }
+.info-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; width: 20px; text-align: center; }
+.info-block { flex: 1; }
+.info-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); display: block; margin-bottom: 3px; }
+.info-val { font-weight: 500; color: var(--text); }
+
+.tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.tag {
+  border-radius: 6px; padding: 3px 9px; font-size: 12px; font-weight: 500;
+}
+.tag.subject { background: rgba(108,99,255,0.14); border: 1px solid rgba(108,99,255,0.25); color: #b0abff; }
+.tag.research { background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.2); color: var(--accent2); }
+.tag.mode { background: var(--surface3); border: 1px solid var(--border2); color: var(--muted2); }
+
+.divider { height: 1px; background: var(--border); margin: 2px 0; }
+
+.profile-summary {
+  font-size: 12.5px; color: var(--muted2); font-style: italic;
+  line-height: 1.6; background: var(--surface3); border-radius: 8px; padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+}
+
+/* Alternates */
+.alternates-label { font-size: 12px; color: var(--muted2); margin-top: 10px; }
+.alt-card {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 13px; margin-top: 6px;
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  transition: border-color 0.18s;
+}
+.alt-card:hover { border-color: var(--accent); }
+.alt-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.alt-name { font-size: 13px; font-weight: 500; }
+.alt-sub  { font-size: 11.5px; color: var(--muted2); margin-top: 1px; }
+
+/* List all */
+.fac-list-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 12px 14px; margin-top: 6px;
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+  transition: border-color 0.18s;
+}
+.fac-list-card:hover { border-color: var(--accent); }
+.fac-list-av {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;
+}
+
+/* Suggestions */
+.sug-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.sug-chip {
+  background: var(--accent-soft); border: 1px solid rgba(108,99,255,0.25);
+  color: #b0abff; border-radius: 20px; padding: 5px 14px;
+  font-size: 12.5px; cursor: pointer; transition: background 0.18s;
+}
+.sug-chip:hover { background: rgba(108,99,255,0.22); }
+
+/* Typing */
+.typing { display: flex; align-items: center; gap: 5px; padding: 13px 17px; }
+.typing span {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--muted);
+  animation: bounce 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+  0%,60%,100% { transform: translateY(0); }
+  30% { transform: translateY(-7px); }
+}
+
+/* ─── INPUT ────────────────────────────── */
+.input-area {
+  padding: 18px 26px; background: rgba(10,10,15,0.9);
+  backdrop-filter: blur(12px); border-top: 1px solid var(--border);
+  position: relative; z-index: 10; flex-shrink: 0;
+}
+.input-wrap {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 13px; display: flex; align-items: flex-end; gap: 10px;
+  padding: 11px 13px; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,0.1); }
+
+textarea {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px; resize: none; min-height: 24px; max-height: 120px; line-height: 1.5;
+}
+textarea::placeholder { color: var(--muted); }
+
+.send-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), #9c97ff);
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px; flex-shrink: 0;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.send-btn:hover { opacity: 0.85; transform: scale(1.06); }
+.send-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+.input-hint { font-size: 11px; color: var(--muted); margin-top: 7px; text-align: center; }
+
+/* Responsive */
+@media (max-width: 680px) {
+  .sidebar { display: none; }
+  .chat-area { padding: 18px 14px; }
+  .input-area { padding: 12px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🎓</div>
+    <div class="logo-text">
+      Faculty<span>AI</span>
+      <span class="logo-sub">Smart Faculty Assistant</span>
+    </div>
+  </div>
+  <div class="sidebar-inner">
+    <button class="new-chat-btn" onclick="clearChat()">✦ &nbsp;New Conversation</button>
+    <div class="section-label">Faculty Directory</div>
+    <div id="faculty-list"></div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      System Online · <span id="fac-count">—</span> Faculty
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">Faculty Assistant</div>
+    <div class="model-badge">Smart Match Engine v3</div>
+  </div>
+
+  <div class="chat-area" id="chat">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🎓</div>
+      <h1>How can I help you?</h1>
+      <p>Ask about any subject or topic — I'll instantly find the right faculty member for you.</p>
+      <div class="quick-prompts">
+        <button class="quick-btn" onclick="sendQuick('Who teaches machine learning?')">🤖 Machine Learning</button>
+        <button class="quick-btn" onclick="sendQuick('I need help with C++ pointers')">💻 C++ Help</button>
+        <button class="quick-btn" onclick="sendQuick('Who handles VLSI chip design?')">🔬 VLSI</button>
+        <button class="quick-btn" onclick="sendQuick('Embedded systems and Arduino')">⚙ Embedded / IoT</button>
+        <button class="quick-btn" onclick="sendQuick('OS deadlock and scheduling')">🖥 Operating Systems</button>
+        <button class="quick-btn" onclick="sendQuick('List all faculty')">📋 All Faculty</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="question" rows="1"
+        placeholder="Ask about a subject, topic, or faculty name…"
+        oninput="autoResize(this)"
+        onkeydown="handleKey(event)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">➤</button>
+    </div>
+    <div class="input-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
+  </div>
+</main>
+
+<script>
+// ─── Load sidebar ─────────────────────────────
+async function loadFaculty() {
+  try {
+    const res = await fetch("/faculty");
+    const data = await res.json();
+    document.getElementById("fac-count").textContent = data.length;
+
+    const list = document.getElementById("faculty-list");
+    list.innerHTML = data.map(f => `
+      <div class="faculty-chip" onclick="sendQuick('Tell me about ${f.name}')">
+        <div class="chip-dot"></div>
+        <div style="min-width:0">
+          <div class="chip-name">${f.name}</div>
+          <div class="chip-dept">${f.department}</div>
+        </div>
+      </div>
+    `).join("");
+  } catch(e) { console.error(e); }
+}
+loadFaculty();
+
+// ─── Helpers ──────────────────────────────────
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 120) + "px";
+}
+function handleKey(e) {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+function sendQuick(text) {
+  document.getElementById("question").value = text;
+  sendMessage();
+}
+function getTime() {
+  return new Date().toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" });
+}
+function esc(t) {
+  return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function clearChat() {
+  document.getElementById("chat").innerHTML = `
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🎓</div>
+      <h1>How can I help you?</h1>
+      <p>Ask about any subject or topic — I'll instantly find the right faculty member for you.</p>
+      <div class="quick-prompts">
+        <button class="quick-btn" onclick="sendQuick('Who teaches machine learning?')">🤖 Machine Learning</button>
+        <button class="quick-btn" onclick="sendQuick('I need help with C++ pointers')">💻 C++ Help</button>
+        <button class="quick-btn" onclick="sendQuick('Who handles VLSI chip design?')">🔬 VLSI</button>
+        <button class="quick-btn" onclick="sendQuick('Embedded systems and Arduino')">⚙ Embedded / IoT</button>
+        <button class="quick-btn" onclick="sendQuick('OS deadlock and scheduling')">🖥 Operating Systems</button>
+        <button class="quick-btn" onclick="sendQuick('List all faculty')">📋 All Faculty</button>
+      </div>
+    </div>`;
+}
+
+// ─── Send message ──────────────────────────────
+async function sendMessage() {
+  const input = document.getElementById("question");
+  const question = input.value.trim();
+  if (!question) return;
+
+  const welcome = document.getElementById("welcome");
+  if (welcome) welcome.remove();
+
+  appendUser(question);
+  input.value = "";
+  input.style.height = "auto";
+
+  const typingEl = appendTyping();
+
+  try {
+    const res = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question })
+    });
+    const data = await res.json();
+    typingEl.remove();
+    handleResponse(data);
+  } catch(e) {
+    typingEl.remove();
+    appendBotText("⚠ Connection error. Make sure the backend server is running.");
+  }
+}
+
+function appendUser(text) {
+  const chat = document.getElementById("chat");
+  const row = document.createElement("div");
+  row.className = "msg-row user";
+  row.innerHTML = `
+    <div class="avatar u">🧑</div>
+    <div class="bubble user">${esc(text)}<span class="bubble-time">${getTime()}</span></div>`;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function appendTyping() {
+  const chat = document.getElementById("chat");
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+  row.innerHTML = `
+    <div class="avatar b">🎓</div>
+    <div class="bubble bot"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+  return row;
+}
+
+function appendBotText(html) {
+  const chat = document.getElementById("chat");
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+  row.innerHTML = `
+    <div class="avatar b">🎓</div>
+    <div class="bubble bot">${html}<span class="bubble-time">${getTime()}</span></div>`;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// ─── Handle response types ─────────────────────
+function handleResponse(data) {
+  const t = data.type;
+
+  if (t === "greeting" || t === "farewell" || t === "thanks" || t === "error") {
+    appendBotText(esc(data.reply));
+    return;
+  }
+
+  if (t === "list_all") {
+    renderListAll(data.faculty_list);
+    return;
+  }
+
+  if (t === "not_found") {
+    const sugs = (data.suggestions || []).map(s =>
+      `<span class="sug-chip" onclick="sendQuick('Who teaches ${s}?')">${s}</span>`
+    ).join("");
+    appendBotText(
+      esc(data.reply) +
+      (sugs ? `<div class="sug-chips">${sugs}</div>` : "")
+    );
+    return;
+  }
+
+  if (t === "faculty") {
+    renderFacultyCard(data.faculty, data.alternates || []);
+  }
+}
+
+function renderFacultyCard(f, alternates) {
+  const chat = document.getElementById("chat");
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+
+  const subjects = (f.core_subjects || []).map(s =>
+    `<span class="tag subject">${esc(s)}</span>`).join("");
+
+  const research = (f.research_areas || []).map(r =>
+    `<span class="tag research">${esc(r)}</span>`).join("");
+
+  const modes = (f.consultation_modes || "").split(",").map(m =>
+    `<span class="tag mode">${esc(m.trim())}</span>`).join("");
+
+  const altHtml = alternates.length > 0 ? `
+    <div class="divider"></div>
+    <div class="alternates-label">💡 You might also consider:</div>
+    ${alternates.map(a => `
+      <div class="alt-card" onclick="sendQuick('Tell me about ${a.name}')">
+        <div class="alt-dot"></div>
+        <div>
+          <div class="alt-name">${esc(a.name)}</div>
+          <div class="alt-sub">${(a.core_subjects || []).join(", ")}</div>
+        </div>
+        <div style="margin-left:auto;font-size:11.5px;color:var(--muted2)">${esc(a.cabin)}</div>
+      </div>`).join("")}
+  ` : "";
+
+  const confLabel = f.confidence === "high" ? "✓ Best Match" : f.confidence === "medium" ? "~ Good Match" : "Possible Match";
+
+  row.innerHTML = `
+    <div class="avatar b">🎓</div>
+    <div class="bubble bot" style="max-width:640px; padding:0; background:var(--surface2);">
+      <div style="padding:13px 17px 4px; font-size:14px;">Here's the best faculty match I found:</div>
+      <div class="faculty-card" style="margin:0 10px 0; border-radius:12px; border-color:rgba(255,255,255,0.1);">
+
+        <div class="card-header">
+          <div class="card-av">👨‍🏫</div>
+          <div class="card-meta">
+            <div class="card-name">${esc(f.name)}</div>
+            <div class="card-desig">${esc(f.designation)}</div>
+            <div class="card-dept">${esc(f.department)}</div>
+          </div>
+          <div class="conf-badge ${f.confidence}">${confLabel}</div>
+        </div>
+
+        <div class="card-body">
+
+          <div class="info-row">
+            <span class="info-icon">📚</span>
+            <div class="info-block">
+              <span class="info-label">Core Subjects</span>
+              <div class="tag-list">${subjects}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">🔬</span>
+            <div class="info-block">
+              <span class="info-label">Research Areas</span>
+              <div class="tag-list">${research}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">🎓</span>
+            <div class="info-block">
+              <span class="info-label">Qualification</span>
+              <span class="info-val">${esc(f.qualification)}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">🏅</span>
+            <div class="info-block">
+              <span class="info-label">Experience</span>
+              <span class="info-val">${esc(f.experience)}</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="info-row">
+            <span class="info-icon">🏢</span>
+            <div class="info-block">
+              <span class="info-label">Cabin</span>
+              <span class="info-val">${esc(f.cabin)}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">📅</span>
+            <div class="info-block">
+              <span class="info-label">Available Days</span>
+              <span class="info-val">${esc(f.available_days)}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">⏰</span>
+            <div class="info-block">
+              <span class="info-label">Available Time</span>
+              <span class="info-val">${esc(f.available_time)}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">💬</span>
+            <div class="info-block">
+              <span class="info-label">Consultation Modes</span>
+              <div class="tag-list">${modes}</div>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">📧</span>
+            <div class="info-block">
+              <span class="info-label">Email</span>
+              <span class="info-val">${esc(f.email)}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-icon">📞</span>
+            <div class="info-block">
+              <span class="info-label">Phone</span>
+              <span class="info-val">${esc(f.phone)}</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="profile-summary">${esc(f.profile_summary)}</div>
+
+          ${altHtml}
+
+        </div>
+      </div>
+      <span class="bubble-time" style="padding:8px 17px;display:block">${getTime()}</span>
+    </div>`;
+
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function renderListAll(list) {
+  const chat = document.getElementById("chat");
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+
+  const cards = list.map(f => `
+    <div class="fac-list-card" onclick="sendQuick('Tell me about ${f.name}')">
+      <div class="fac-list-av">👨‍🏫</div>
+      <div style="min-width:0">
+        <div style="font-size:13.5px;font-weight:600">${esc(f.name)}</div>
+        <div style="font-size:11.5px;color:var(--muted2)">${esc(f.designation)} · ${esc(f.department)}</div>
+        <div style="font-size:11.5px;color:var(--accent2);margin-top:2px">${(f.core_subjects||[]).join(", ")}</div>
+      </div>
+      <div style="margin-left:auto;font-size:11.5px;color:var(--muted2);flex-shrink:0">${esc(f.cabin)}</div>
+    </div>`).join("");
+
+  row.innerHTML = `
+    <div class="avatar b">🎓</div>
+    <div class="bubble bot" style="max-width:640px">
+      <div style="font-weight:600;margin-bottom:10px">Here are all ${list.length} faculty members:</div>
+      ${cards}
+      <span class="bubble-time">${getTime()}</span>
+    </div>`;
+
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+</script>
+</body>
+</html>

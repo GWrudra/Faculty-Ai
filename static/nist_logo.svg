@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150">
+  <ellipse cx="100" cy="75" rx="95" ry="70" fill="#3949AB"/>
+  <text x="100" y="95" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="60" fill="white" letter-spacing="2">nist</text>
+  <rect x="80" y="38" width="8" height="8" fill="white" rx="1"/>
+</svg>
