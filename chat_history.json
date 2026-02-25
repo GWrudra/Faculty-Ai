@@ -1,66 +1,58 @@
 {
   "sessions": {
-    "test_sql": {
-      "session_id": "test_sql",
-      "title": "I need help with SQL queries urgently. Can I meet ",
-      "created_at": "2026-02-23 17:48:49",
-      "updated_at": "2026-02-23 17:48:49"
-    },
-    "sess_1771868954003_92eq8gbry": {
-      "session_id": "sess_1771868954003_92eq8gbry",
-      "title": "\"I need help with SQL queries urgently. Can I meet",
-      "created_at": "2026-02-23 17:49:16",
-      "updated_at": "2026-02-23 17:49:16"
+    "sess_1772039389262_ply9wmihq": {
+      "session_id": "sess_1772039389262_ply9wmihq",
+      "title": "I need help in Hindi around 10AM",
+      "created_at": "2026-02-25 17:09:52",
+      "updated_at": "2026-02-25 17:10:00"
     }
   },
   "messages": {
-    "test_sql": [
+    "sess_1772039389262_ply9wmihq": [
       {
         "role": "user",
-        "content": "I need help with SQL queries urgently. Can I meet someone today?",
-        "timestamp": "2026-02-23 17:48:49"
+        "content": "I need help in Hindi around 10AM",
+        "timestamp": "2026-02-25 17:09:52"
       },
       {
         "role": "bot",
         "content": "I couldn't find a faculty match for that topic. Try asking about a specific subject like 'C++', 'Machine Learning', 'VLSI', 'OS', or 'Embedded Systems'.",
-        "timestamp": "2026-02-23 17:48:49",
+        "timestamp": "2026-02-25 17:09:52",
         "response_data": {
           "type": "not_found",
           "reply": "I couldn't find a faculty match for that topic. Try asking about a specific subject like 'C++', 'Machine Learning', 'VLSI', 'OS', or 'Embedded Systems'.",
           "suggestions": [
             "c++",
-            "electronics",
+            "embedded systems",
+            "computer networks",
             "artificial intelligence",
-            "data structures",
-            "machine learning",
-            "operating systems"
+            "vlsi",
+            "data structures"
           ],
-          "timestamp": "23:18"
+          "timestamp": "22:39"
         }
-      }
-    ],
-    "sess_1771868954003_92eq8gbry": [
+      },
       {
         "role": "user",
-        "content": "\"I need help with SQL queries urgently. Can I meet someone today? It's Thursday evening at 5:30 PM.\"",
-        "timestamp": "2026-02-23 17:49:16"
+        "content": "I need help in Hindi around 10AM",
+        "timestamp": "2026-02-25 17:10:00"
       },
       {
         "role": "bot",
         "content": "I couldn't find a faculty match for that topic. Try asking about a specific subject like 'C++', 'Machine Learning', 'VLSI', 'OS', or 'Embedded Systems'.",
-        "timestamp": "2026-02-23 17:49:16",
+        "timestamp": "2026-02-25 17:10:00",
         "response_data": {
           "type": "not_found",
           "reply": "I couldn't find a faculty match for that topic. Try asking about a specific subject like 'C++', 'Machine Learning', 'VLSI', 'OS', or 'Embedded Systems'.",
           "suggestions": [
             "c++",
-            "electronics",
+            "embedded systems",
+            "computer networks",
             "artificial intelligence",
-            "data structures",
-            "machine learning",
-            "operating systems"
+            "vlsi",
+            "data structures"
           ],
-          "timestamp": "23:19"
+          "timestamp": "22:40"
         }
       }
     ]
